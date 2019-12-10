@@ -3,15 +3,21 @@ var router = express.Router();
 
 const DB = require("../models");
 const UserModel = DB.getModel("User");
-const { sendValidCode } = require("../tool/sendSMS");
+const {
+    sendValidCode
+} = require("../tool/sendSMS");
 
 /* GET users listing. */
-router.get("/", function(req, res, next) {
+router.get("/", function (req, res, next) {
     res.send("respond with a resource");
 });
+
 //用户登录
-router.post("/login", async function(req, res, next) {
-    const { phone, password } = req.body;
+router.post("/login", async function (req, res, next) {
+    const {
+        phone,
+        password
+    } = req.body;
     try {
         let user = await UserModel.findOne({
             phone,
@@ -32,9 +38,11 @@ router.post("/login", async function(req, res, next) {
 });
 
 //判断用户是否注册
-router.post("/isRegist", async function(req, res, next) {
+router.post("/isRegist", async function (req, res, next) {
     try {
-        const { phone } = req.body;
+        const {
+            phone
+        } = req.body;
         let queryResult = await UserModel.find({
             phone
         });
@@ -46,10 +54,15 @@ router.post("/isRegist", async function(req, res, next) {
 });
 
 //获取验证码
-router.post("/validcode", async function(req, res, next) {
-    const { phone } = req.body;
+router.post("/validcode", async function (req, res, next) {
+    const {
+        phone
+    } = req.body;
     try {
-        const { sixValidCode, result } = await sendValidCode(phone);
+        const {
+            sixValidCode,
+            result
+        } = await sendValidCode(phone);
 
         //将验证码存入session
         req.session.validcode = sixValidCode;
@@ -68,11 +81,18 @@ router.post("/validcode", async function(req, res, next) {
 });
 
 //注册用户
-router.post("/regist", async function(req, res, next) {
-    const { phone, password, validcode } = req.body;
+router.post("/regist", async function (req, res, next) {
+    const {
+        phone,
+        password,
+        validcode
+    } = req.body;
     //判断验证码是否正确
     if (validcode != req.session.validcode) {
-        res.json({ status: 400, msg: "验证码错误" });
+        res.json({
+            status: 400,
+            msg: "验证码错误"
+        });
         return;
     }
     let = await UserModel.create({
