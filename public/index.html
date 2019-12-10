@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>客多达工具站</title>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.4.8/dist/antd.min.css">
+</head>
+
+<style>
+    html,
+    body,
+    #app {
+        height: 100%;
+    }
+
+    * {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .ant-layout-sider {
+        background: white;
+    }
+
+    .ant-layout-sider-trigger {
+        background: #2062e6;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <a-layout id="components-layout-demo-side" style="min-height: 100vh">
+            <a-layout-sider collapsible v-model="isCollapse">
+                <div class="logo"></div>
+                <a-menu theme="light" default-selected-keys="0-0" :default-open-keys="['淘宝','拼多多']" mode="inline">
+                    <a-sub-menu v-for="(menu1,index1) in menuList" :key="menu1.name">
+                        <span slot="title">
+                            <a-icon :type="menu1.type"></a-icon>
+                            <span>{{menu1.name}}</span>
+                        </span>
+                        <a-menu-item v-for="(menu2,index2) in menu1.children" :key="`${index1}-${index2}`" @click="gotoPage(menu2.href)">
+                            {{menu2.name}}
+                        </a-menu-item>
+                    </a-sub-menu>
+                </a-menu>
+            </a-layout-sider>
+            <a-layout>
+                <!-- <a-layout-header style="background: #fff; padding: 0" /> -->
+                <a-layout-content style="padding-left:10px">
+                    <!-- <a-breadcrumb style="margin: 16px 0">
+                        <a-breadcrumb-item>User</a-breadcrumb-item>
+                        <a-breadcrumb-item>Bill</a-breadcrumb-item>
+                    </a-breadcrumb> -->
+                    <!-- <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
+                        Bill is a cat.
+                    </div> -->
+                    <iframe :src="activeSrc" frameborder="0" width="100%" height="100%"></iframe>
+                </a-layout-content>
+                <!-- <a-layout-footer style="text-align: center">
+                    Ant Design ©2018 Created by Ant UED
+                </a-layout-footer> -->
+            </a-layout>
+        </a-layout>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!-- 引入组件库 -->
+    <!-- <script src="https://unpkg.com/element-ui/lib/index.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.4.8/dist/antd.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            methods: {
+                gotoPage(href) {
+                    this.activeSrc = href;
+                }
+            },
+            data() {
+                const item = {
+                    date: '2016-05-02',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                };
+                return {
+                    isCollapse: false,
+                    activeSrc: '/taobao/home.html',
+                    tableData: Array(20).fill(item),
+                    menuList: [{
+                            name: '淘宝',
+                            type: 'taobao',
+                            children: [{
+                                    name: '主页',
+                                    href: '/taobao/home.html'
+                                },
+                                {
+                                    name: '实时概况',
+                                    href: '/taobao/ipoll.html'
+                                },
+                                {
+                                    name: '交易概况',
+                                    href: '/taobao/trade.html'
+                                },
+                                {
+                                    name: '店铺数据1',
+                                    href: '/taobao/app1.html'
+                                },
+                                {
+                                    name: '店铺数据2',
+                                    href: '/taobao/app2.html'
+                                },
+                                {
+                                    name: '普云交易',
+                                    href: '/taobao/app3.html'
+                                },
+                                {
+                                    name: '旺店交易',
+                                    href: '/taobao/app4.html'
+                                },
+                                {
+                                    name: '超级交易',
+                                    href: '/taobao/app5.html'
+                                },
+                                {
+                                    name: '赤兔交易',
+                                    href: '/taobao/app6.html'
+                                },
+                                {
+                                    name: '订单',
+                                    href: '/taobao/app7.html'
+                                },
+                            ]
+                        },
+                        {
+                            name: '拼多多',
+                            type: 'shopping',
+                            children: [{
+                                    name: '主页',
+                                    href: '/pdd/pc1.html'
+                                },
+                                {
+                                    name: '经营总览',
+                                    href: '/pdd/pc2.html'
+                                },
+                                {
+                                    name: '交易数据',
+                                    href: '/pdd/pc3.html'
+                                },
+                                {
+                                    name: '数据中心-实时',
+                                    href: '/pdd/app2.html'
+                                },
+                                {
+                                    name: '数据中心-日报',
+                                    href: '/pdd/app1.html'
+                                },
+                                {
+                                    name: '数据中心-周报',
+                                    href: '/pdd/app3.html'
+                                },
+                                {
+                                    name: '数据中心-月报',
+                                    href: '/pdd/app4.html'
+                                },
+                                {
+                                    name: '交易数据-1',
+                                    href: '/taobao/app5.html'
+                                },
+                                {
+                                    name: '交易数据-2',
+                                    href: '/taobao/app6.html'
+                                },
+                                {
+                                    name: '交易数据-3',
+                                    href: '/taobao/app7.html'
+                                },
+                            ]
+                        }
+                    ]
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

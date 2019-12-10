@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #app1bk {
+            width: 418px;
+            height: 825px;
+            background: url('../images/pdd/app5.jpg');
+            background-position: center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            position: relative;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'SimHei', 'WenQuanYi Micro Hei', 'sans-serif';
+        }
+
+        .item {
+            position: absolute;
+            background: white;
+            font-size: 19px;
+            color: rgb(36, 36, 36);
+            text-align: center;
+        }
+
+        .item-t {
+            font-size: 14px;
+            font-weight: bold;
+            top: 12px;
+            width: 64px;
+            text-align: right;
+        }
+
+        .rmb {
+            font-size: 15px;
+            font-weight: bold;
+            margin-right: 1px;
+            color: rgb(51, 51, 51)
+        }
+
+        .item-1 {
+            top: 395px;
+            left: 2px;
+            width: 100px;
+        }
+
+        .item-2 {
+            top: 395px;
+            left: 108px;
+            width: 100px;
+        }
+
+        .item-3 {
+            top: 395px;
+            left: 212px;
+            width: 100px;
+        }
+
+        .item-4 {
+            top: 395px;
+            right: 2px;
+            width: 100px;
+        }
+
+        .item-5 {
+            top: 515px;
+            left: 2px;
+            width: 100px;
+        }
+
+        .item-6 {
+            top: 515px;
+            left: 108px;
+            width: 100px;
+        }
+
+        .item-7 {
+            top: 515px;
+            left: 212px;
+            width: 100px;
+        }
+
+        .item-8 {
+            top: 515px;
+            right: 2px;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body contenteditable="true">
+    <div id="app1bk">
+        <div class="item item-t">15:32</div>
+        <div class="item item-1"><span class="rmb">¥</span><span class="num"></span></div>
+        <div class="item item-2">1,478</div>
+        <div class="item item-3">59</div>
+        <div class="item item-4">29</div>
+        <div class="item item-5">7</div>
+        <div class="item item-6">12</div>
+        <div class="item item-7">8</div>
+        <div class="item item-8">1</div>
+    </div>
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
+    <script src="../javascripts/jquery-3.4.1.min.js"></script>
+    <script src="../javascripts/util.js"></script>
+    <script>
+        $(function () {
+            let now = moment().format('HH:mm');
+            $('.item-t').text(now);
+
+
+            let order = getRandomNumber(50, 80);
+            let price = getRandomNumber(20, 40);
+            let talk = getRandomNumber(order * 1.2, order * 1.5);
+            let visit = getRandomNumber(order * 8, order * 12);
+            $('.item-1 .num').text(parseInt(order * price).toLocaleString());
+            $('.item-2').text(visit.toLocaleString());
+            $('.item-3').text(talk.toLocaleString());
+            $('.item-4').text(order.toLocaleString());
+
+            $('.item-5').text(getRandomNumber(8, 15));
+            $('.item-6').text(getRandomNumber(8, 15));
+            $('.item-7').text(getRandomNumber(8, 15));
+            $('.item-8').text(getRandomNumber(0, 2));
+
+
+
+        });
+    </script>
+</body>
+
+</html>

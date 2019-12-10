@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #app1bk {
+            width: 418px;
+            height: 900px;
+            background: url("../images/taobao/app4.jpg");
+            background-position: center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+
+            position: relative;
+        }
+
+        .item {
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+                "SimHei", "WenQuanYi Micro Hei", "sans-serif";
+            position: absolute;
+            background: white;
+            text-align: center;
+            font-size: 14px;
+            color: rgb(50, 53, 58);
+            font-weight: bold;
+        }
+
+        .item-time {
+            top: 15px;
+            left: 25px;
+            width: 40px;
+            font-weight: bold;
+            background: rgb(251, 251, 251);
+            color: black;
+        }
+
+        .item-tosend {
+            font-size: 24px;
+            width: 100px;
+            top: 165px;
+            left: 65px;
+        }
+
+        .item-sent {
+            font-size: 24px;
+            width: 100px;
+            top: 165px;
+            left: 255px;
+        }
+
+        .item-3y {
+            font-size: 18px;
+            width: 80px;
+            top: 244px;
+            left: 23px;
+        }
+
+        .item-topay {
+            font-size: 18px;
+            width: 80px;
+            top: 244px;
+            left: 117px;
+        }
+
+        .item-reject {
+            font-size: 18px;
+            width: 80px;
+            top: 244px;
+            left: 215px;
+        }
+
+        .item-record {
+            font-size: 18px;
+            width: 80px;
+            top: 244px;
+            left: 311px;
+        }
+    </style>
+</head>
+
+<body contenteditable="true">
+    <div id="app1bk">
+        <div class="item item-time">7:23</div>
+        <div class="item item-tosend">10</div>
+        <div class="item item-sent">528</div>
+        <div class="item item-3y">981</div>
+        <div class="item item-topay">27</div>
+        <div class="item item-reject">0</div>
+        <div class="item item-record">523</div>
+    </div>
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
+    <script src="../javascripts/jquery-3.4.1.min.js"></script>
+    <script src="../javascripts/util.js"></script>
+    <script>
+        $(function () {
+            let now = moment().format('HH:mm');
+            $('.item-time').text(now);
+
+            let price = getRandomNumber(20, 40);
+            let order = getRandomNumber(30, 50);
+            let tosend = getRandomNumber(5, 10);
+            let sent = order - tosend;
+            let y3order = getRandomNumber(order * 85, order * 95);
+            let topay = price * getRandomNumber(0, 2);
+            let reject = 0;
+            let toScore = getRandomNumber(order * 0.5, order * 0.8);
+            $('.item-tosend').text(tosend);
+            $('.item-sent').text(sent);
+            $('.item-3y').text(y3order);
+            $('.item-topay').text(topay);
+            $('.item-reject').text(reject);
+            $('.item-record').text(toScore);
+        });
+    </script>
+</body>
+
+</html>

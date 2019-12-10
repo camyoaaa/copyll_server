@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #app1bk {
+            width: 418px;
+            height: 900px;
+            background: url("../images/taobao/app3.jpg");
+            background-position: center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+
+            position: relative;
+        }
+
+        #app1bk .item {
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+                "SimHei", "WenQuanYi Micro Hei", "sans-serif";
+            position: absolute;
+            background: transparent;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #app1bk .item-time {
+            top: 15px;
+            left: 25px;
+            width: 40px;
+            font-weight: bold;
+            background: rgb(251, 251, 251);
+            color: black;
+        }
+
+        .item-gold {
+            width: 90px;
+            top: 115px;
+            left: 60px;
+        }
+
+        .item-order {
+            width: 45px;
+            top: 115px;
+            left: 255px;
+        }
+    </style>
+</head>
+
+<body contenteditable="true">
+    <div id="app1bk">
+        <div class="item item-time">8:43</div>
+        <div class="item item-gold">3,569</div>
+        <div class="item item-order">22</div>
+    </div>
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script>
+    <script src="../javascripts/jquery-3.4.1.min.js"></script>
+    <script src="../javascripts/util.js"></script>
+    <script>
+        $(function () {
+            let now = moment().format('HH:mm');
+            $('.item-time').text(now);
+
+            let order = getRandomNumber(30, 50);
+            let price = getRandomNumber(20, 40);
+            $('.item-gold').text(Number(price * order).toLocaleString());
+            $('.item-order').text(order);
+        });
+    </script>
+</body>
+
+</html>
