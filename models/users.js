@@ -1,20 +1,39 @@
 module.exports = {
-    phone: {
+    username: { //用户名
+        type: String,
+        default: '',
+        required: true
+
+    },
+    userid: { //用户id
+        type: String,
+        default: '',
+        required: true,
+    },
+    password: { //用户密码
+        type: String,
+        default: ''
+    },
+    phone: { //手机号码
         type: Number,
         default: 0,
         required: true
     },
-    vipGrade: {
+    email: { //用户邮箱
+        type: String,
+        default: ''
+    },
+    vipgrade: { //vip等级
         type: Number,
         default: 0
     },
-    email: {
-        type: String,
-        default: ''
+    chargescore: { //充值积分
+        type: Number,
+        default: 0
     },
-    password: {
-        type: String,
-        default: ''
+    flowscore: { //流量积分
+        type: Number,
+        default: 0
     },
     validcode: {
         type: String,

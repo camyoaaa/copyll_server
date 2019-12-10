@@ -96,6 +96,8 @@ router.post("/regist", async function (req, res, next) {
         return;
     }
     let = await UserModel.create({
+        username: phone,
+        userid: '0000001',
         phone,
         password
     });
