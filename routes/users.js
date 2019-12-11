@@ -5,7 +5,9 @@ const DB = require("../models");
 const UserModel = DB.getModel("User");
 const {
     sendValidCode
-} = require("../tool/sendSMS");
+} = require("../tool/sendSMS"); //发送验证码短信api
+
+const Jwt = require('../authMiddleware/jwt');
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -14,6 +16,7 @@ router.get("/", function (req, res, next) {
 
 //用户登录
 router.post("/login", async function (req, res, next) {
+    res.header("Access-Control-Allow-Headers", "Content-Type");
     const {
         phone,
         password
@@ -24,16 +27,26 @@ router.post("/login", async function (req, res, next) {
             password
         });
         if (user) {
-            res.cookie("userid", user._id); //登录时候设置cookie
+            let userid = user._id.toString();
+            res.cookie("userid", userid); //登录时候设置cookie
+            let userToken = new Jwt(userid).generateToken();
+            res.json({
+                status: 200,
+                msg: "登陆成功",
+                user: {
+                    ...user._doc,
+                    userToken
+                }
+            });
+        } else {
+            throw new Error('用户名或密码错误,请重新登录');
         }
-        console.log("*******************", user);
-        res.json({
-            status: user ? 200 : 400,
-            msg: user ? "登陆成功" : "用户名或者密码错误",
-            user: user
-        });
+
     } catch (error) {
-        console.log("^^^^^^^^^^^^^^^^^^^^^", error);
+        res.json({
+            status: 400,
+            msg: error.message
+        });
     }
 });
 
@@ -101,6 +114,11 @@ router.post("/regist", async function (req, res, next) {
         phone,
         password
     });
+    res.json({
+        status: 200,
+        msg: "注册成功"
+    });
+    return;
 });
 
 module.exports = router;
