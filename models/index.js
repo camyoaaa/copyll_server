@@ -3,6 +3,7 @@ const {
     Schema
 } = mongoose;
 const userSchema = require('./users');
+const TaskSchema = require('./tasks');
 
 const DB_URL = "mongodb://localhost:27017/kdd";
 mongoose.connect(DB_URL, {
@@ -10,12 +11,13 @@ mongoose.connect(DB_URL, {
     useUnifiedTopology: true
 });
 mongoose.connection.on("connected", function () {
-    console.log("mongoose connect success");
+    console.log("********************** mongoose connect success **********************");
 });
 
 
 const models = {
-    User: userSchema
+    User: userSchema,
+    Task: TaskSchema
 }
 
 //注册所有的表

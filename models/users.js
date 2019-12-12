@@ -14,6 +14,10 @@ module.exports = {
         type: String,
         default: ''
     },
+    tradecode: { //交易密码
+        type: String,
+        default: ''
+    },
     phone: { //手机号码
         type: Number,
         default: 0,

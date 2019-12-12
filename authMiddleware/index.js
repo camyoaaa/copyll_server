@@ -12,6 +12,7 @@ const auth = function (req, res, next) {
         if (!new Jwt(token).verifyToken()) {
             res.json({
                 status: 403,
+                code: 0,
                 msg: '无权限访问或登录过期,请重新登录'
             });
             return;
