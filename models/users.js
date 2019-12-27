@@ -39,7 +39,7 @@ module.exports = {
         type: Number,
         default: 0
     },
-    validcode: {
+    captcha: {
         type: String,
         default: ''
     }

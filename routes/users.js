@@ -4,7 +4,7 @@ var router = express.Router();
 const DB = require("../models");
 const UserModel = DB.getModel("User");
 const {
-    sendValidCode
+    sendCaptcha
 } = require("../tool/sendSMS"); //发送验证码短信api
 
 const Jwt = require("../authMiddleware/jwt");
@@ -34,7 +34,7 @@ router.post("/login", async function (req, res, next) {
             res.json({
                 status: 200,
                 msg: "登陆成功",
-                user: user._doc
+                user: {...user._doc,token:userToken}
             });
         } else {
             throw new Error("用户名或密码错误,请重新登录");
@@ -97,22 +97,21 @@ router.post("/isRegist", async function (req, res, next) {
 });
 
 //获取验证码
-router.post("/validcode", async function (req, res, next) {
+router.post("/captcha", async function (req, res, next) {
     const {
         phone
     } = req.body;
     try {
         const {
-            sixValidCode,
+            sixCaptcha,
             result
-        } = await sendValidCode(phone);
+        } = await sendCaptcha(phone);
 
         //将验证码存入session
-        req.session.validcode = sixValidCode;
-
+        req.session.captcha = sixCaptcha;
         res.json({
             status: 200,
-            sixValidCode,
+            sixCaptcha,
             result
         });
     } catch (error) {
@@ -126,20 +125,12 @@ router.post("/validcode", async function (req, res, next) {
 //注册用户
 router.post("/regist", async function (req, res, next) {
     const {
+        username,
         phone,
         password,
-        validcode
     } = req.body;
-    //判断验证码是否正确
-    if (validcode != req.session.validcode) {
-        res.json({
-            status: 400,
-            msg: "验证码错误"
-        });
-        return;
-    }
     let = await UserModel.create({
-        username: phone,
+        username,
         userid: "0000001",
         phone,
         password
@@ -149,6 +140,23 @@ router.post("/regist", async function (req, res, next) {
         msg: "注册成功"
     });
     return;
+});
+
+//获取用户信息
+router.get("/info", async function (req, res, next) {
+    try {
+        const {
+            userid
+        } = req.body;
+        let queryResult = await UserModel.findOne({
+            userid
+        });
+        console.log('queryResult',queryResult);
+        res.json({
+            status: 200,
+            info: {...queryResult,avatar:'//mapp.alicdn.com/1571622754899D0vApol5yaxNpaQ.png'}
+        });
+    } catch (error) {}
 });
 
 module.exports = router;

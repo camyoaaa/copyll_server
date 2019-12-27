@@ -13,8 +13,8 @@ const client = new Core({
 const {
     randomNumber
 } = require('./commonFunc');
-exports.sendValidCode = function (PhoneNumbers) {
-    const sixValidCode = randomNumber(100000, 999999); //验证码范围
+exports.sendCaptcha = function (PhoneNumbers) {
+    const sixCaptcha = randomNumber(100000, 999999); //验证码范围
     return new Promise((resolve, reject) => {
         client.request('SendSms', {
             RegionId,
@@ -22,13 +22,13 @@ exports.sendValidCode = function (PhoneNumbers) {
             SignName: validSMSSignName,
             TemplateCode: validSMSTemplateCode,
             TemplateParam: JSON.stringify({
-                code: sixValidCode
+                code: sixCaptcha
             })
         }, {
             method: 'POST'
         }).then((result) => {
             resolve({
-                sixValidCode,
+                sixCaptcha,
                 result
             });
         }, (ex) => {
