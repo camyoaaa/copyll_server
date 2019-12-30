@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+var moment = require("moment");
 
 const DB = require("../models");
 const UserModel = DB.getModel("User");
@@ -21,20 +22,25 @@ router.post("/login", async function (req, res, next) {
         password
     } = req.body;
     try {
-        let user = await UserModel.findOne({
+        let findandupdateResult = await UserModel.findOneAndUpdate({
             phone,
             password
+        }, {
+            lastLoginTime: moment().format("YYYY-MM-DD HH:mm:ss")
         });
-        if (user) {
-            let userid = user._id.toString();
+        if (findandupdateResult._id) { //成功更新一条数据
+            let userid = findandupdateResult._id.toString();
             res.cookie("userid", userid); //登录时候设置cookie
             let userToken = new Jwt(userid).generateToken();
-            res.header('Access-Control-Expose-Headers', 'Authorization'); //使前端能获取到header中的Authorization
+            res.header("Access-Control-Expose-Headers", "Authorization"); //使前端能获取到header中的Authorization
             res.header("Authorization", userToken);
             res.json({
                 status: 200,
                 msg: "登陆成功",
-                user: {...user._doc,token:userToken}
+                user: {
+                    ...findandupdateResult._doc,
+                    token: userToken
+                }
             });
         } else {
             throw new Error("用户名或密码错误,请重新登录");
@@ -62,7 +68,7 @@ router.post("/logout", async function (req, res, next) {
             let userid = user._id.toString();
             res.cookie("userid", userid); //登录时候设置cookie
             let userToken = new Jwt(userid).generateToken();
-            res.header('Access-Control-Expose-Headers', 'Authorization'); //使前端能获取到header中的Authorization
+            res.header("Access-Control-Expose-Headers", "Authorization"); //使前端能获取到header中的Authorization
             res.header("Authorization", userToken);
             res.json({
                 status: 200,
@@ -127,7 +133,7 @@ router.post("/regist", async function (req, res, next) {
     const {
         username,
         phone,
-        password,
+        password
     } = req.body;
     let = await UserModel.create({
         username,
@@ -151,10 +157,13 @@ router.get("/info", async function (req, res, next) {
         let queryResult = await UserModel.findOne({
             userid
         });
-        console.log('queryResult',queryResult);
+        console.log("queryResult", queryResult);
         res.json({
             status: 200,
-            info: {...queryResult,avatar:'//mapp.alicdn.com/1571622754899D0vApol5yaxNpaQ.png'}
+            info: {
+                ...queryResult,
+                avatar: "//mapp.alicdn.com/1571622754899D0vApol5yaxNpaQ.png"
+            }
         });
     } catch (error) {}
 });

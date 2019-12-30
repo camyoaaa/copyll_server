@@ -2,9 +2,9 @@ const Jwt = require('./jwt'); //引入jwt认证工具类
 
 //不用认证的api地址
 const noAuthUrls = [
-    '/user/login',
-    '/user/regist',
-    '/user/isRegist'
+    '/auth/login',
+    '/auth/regist',
+    '/auth/isRegist'
 ];
 const auth = function (req, res, next) {
     if (!noAuthUrls.includes(req.url)) {

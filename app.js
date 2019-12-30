@@ -6,6 +6,8 @@ var cookieParser = require("cookie-parser"); //cookie解析器
 var logger = require("morgan"); //日志模块,只能记录请求信息
 var session = require("express-session");
 
+var authMiddleware = require('./authMiddleware'); //token认证
+
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var tasksRouter = require("./routes/tasks");
@@ -22,6 +24,7 @@ app.all("*", function (req, res, next) {
     next();
 });
 
+app.use(authMiddleware); //启用token认证
 // 使用 session 中间件
 app.use(
     session({
