@@ -4,12 +4,14 @@ const {
 } = mongoose;
 const userSchema = require('./users');
 const TaskSchema = require('./tasks');
+const ScoreSchema = require('./score');
 
 const DB_URL = "mongodb://localhost:27017/kdd";
 mongoose.connect(DB_URL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
 });
+mongoose.set('useFindAndModify', false);
 mongoose.connection.on("connected", function () {
     console.log("********************** mongoose connect success **********************");
 });
@@ -17,7 +19,8 @@ mongoose.connection.on("connected", function () {
 
 const models = {
     User: userSchema,
-    Task: TaskSchema
+    Task: TaskSchema,
+    Score: ScoreSchema
 }
 
 //注册所有的表

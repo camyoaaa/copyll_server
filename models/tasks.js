@@ -1,10 +1,10 @@
 module.exports = {
-    userid: {
+    userid: { //用户名
         type: String,
         default: '',
         required: true
     },
-    taskid: { //用户名
+    taskid: {
         type: String,
         default: '',
         required: true

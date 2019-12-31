@@ -4,18 +4,22 @@ const Jwt = require('./jwt'); //引入jwt认证工具类
 const noAuthUrls = [
     '/auth/login',
     '/auth/regist',
-    '/auth/isRegist'
+    '/auth/isRegist',
+    '/auth/captcha',
 ];
 const auth = function (req, res, next) {
     if (!noAuthUrls.includes(req.url)) {
-        let token = req.headers.Authorization;
-        if (!new Jwt(token).verifyToken()) {
+        let token = req.headers.authorization;
+        let verifyToken = new Jwt(token).verifyToken();
+        if (!verifyToken) { //如果验证token不通过
             res.json({
                 status: 403,
                 code: 0,
                 msg: '无权限访问或登录过期,请重新登录'
             });
             return;
+        } else { //如果通过token验证,则将验证信息写入req对象
+            req.userid = verifyToken;
         }
     }
     next();

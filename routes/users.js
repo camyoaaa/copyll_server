@@ -10,6 +10,31 @@ const {
 
 const Jwt = require("../authMiddleware/jwt");
 
+
+//剥离记录中敏感信息
+const filterUserInfo = (record, req) => {
+    const {
+        password,
+        transactionPassword,
+        __v,
+        _id,
+        ...usreInfo
+    } = record;
+    usreInfo.userid = _id;
+    usreInfo.lastLoginIP = usreInfo.lastLoginIP || getClientIP(req);
+    usreInfo.lastLoginTime = usreInfo.lastLoginTime || moment().format('YYYY-MM-DD HH:mm:ss');
+    return usreInfo;
+}
+
+const getClientIP = (req) => {
+    // console.log("headers = " + JSON.stringify(req.headers)); // 包含了各种header，包括x-forwarded-for(如果被代理过的话)
+    // console.log("x-forwarded-for = " + req.header('x-forwarded-for')); // 各阶段ip的CSV, 最左侧的是原始ip
+    // console.log("ips = " + JSON.stringify(req.ips)); // 相当于(req.header('x-forwarded-for') || '').split(',')
+    // console.log("remoteAddress = " + req.connection.remoteAddress); // 未发生代理时，请求的ip
+    // console.log("ip = " + req.ip); // 同req.connection.remoteAddress, 但是格式要好一些
+    return ip = req.headers['x-real-ip'] ? req.headers['x-real-ip'] : req.ip.replace(/::ffff:/, '');
+}
+
 /* GET users listing. */
 router.get("/", function (req, res, next) {
     res.send("respond with a resource");
@@ -26,21 +51,18 @@ router.post("/login", async function (req, res, next) {
             phone,
             password
         }, {
-            lastLoginTime: moment().format("YYYY-MM-DD HH:mm:ss")
+            lastLoginTime: moment().format("YYYY-MM-DD HH:mm:ss"),
+            lastLoginIP: getClientIP(req)
         });
-        if (findandupdateResult._id) { //成功更新一条数据
+        if (findandupdateResult && findandupdateResult._id) { //成功更新一条数据
             let userid = findandupdateResult._id.toString();
-            res.cookie("userid", userid); //登录时候设置cookie
+            // res.cookie("userid", userid); //登录时候设置cookie
             let userToken = new Jwt(userid).generateToken();
-            res.header("Access-Control-Expose-Headers", "Authorization"); //使前端能获取到header中的Authorization
             res.header("Authorization", userToken);
             res.json({
                 status: 200,
                 msg: "登陆成功",
-                user: {
-                    ...findandupdateResult._doc,
-                    token: userToken
-                }
+                user: filterUserInfo(findandupdateResult._doc, req)
             });
         } else {
             throw new Error("用户名或密码错误,请重新登录");
@@ -68,7 +90,6 @@ router.post("/logout", async function (req, res, next) {
             let userid = user._id.toString();
             res.cookie("userid", userid); //登录时候设置cookie
             let userToken = new Jwt(userid).generateToken();
-            res.header("Access-Control-Expose-Headers", "Authorization"); //使前端能获取到header中的Authorization
             res.header("Authorization", userToken);
             res.json({
                 status: 200,
@@ -114,7 +135,7 @@ router.post("/captcha", async function (req, res, next) {
         } = await sendCaptcha(phone);
 
         //将验证码存入session
-        req.session.captcha = sixCaptcha;
+        // req.session.captcha = sixCaptcha;
         res.json({
             status: 200,
             sixCaptcha,
@@ -133,13 +154,17 @@ router.post("/regist", async function (req, res, next) {
     const {
         username,
         phone,
-        password
+        password,
+        guiderid
     } = req.body;
     let = await UserModel.create({
         username,
-        userid: "0000001",
+        guiderid,
         phone,
-        password
+        password,
+        kscore: 200,
+        registIP: getClientIP(req),
+        registTime: moment().format('YYYY-MM-DD HH:mm:ss')
     });
     res.json({
         status: 200,
@@ -150,22 +175,46 @@ router.post("/regist", async function (req, res, next) {
 
 //获取用户信息
 router.get("/info", async function (req, res, next) {
+
     try {
-        const {
-            userid
-        } = req.body;
+        let userid = req.userid;
         let queryResult = await UserModel.findOne({
-            userid
+            _id: userid
         });
-        console.log("queryResult", queryResult);
         res.json({
             status: 200,
-            info: {
-                ...queryResult,
-                avatar: "//mapp.alicdn.com/1571622754899D0vApol5yaxNpaQ.png"
-            }
+            user: filterUserInfo(queryResult._doc, req)
         });
-    } catch (error) {}
+    } catch (error) {
+        res.json({
+            status: 404,
+            msg: '未查询到用户信息',
+            info: null
+        });
+    }
 });
+
+router.get('/promote', async (req, res, next) => {
+    try {
+        let userid = req.userid;
+        let promoteUsers = await UserModel.find({
+            guiderId: userid
+        });
+        // .aggregate([{
+        //     $lookup: {
+        //         from: 'score',
+        //         localField: "_id",
+        //         foreignField: "userid",
+        //         as: "scoreinfo"
+        //     }
+        // }])
+        res.json({
+            status: 200,
+            promoteUsers
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 module.exports = router;

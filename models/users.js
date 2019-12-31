@@ -6,10 +6,9 @@ module.exports = {
         comment: '用户名'
 
     },
-    userid: { //用户id
+    guiderid: { //推广人id
         type: String,
-        default: '',
-        required: true,
+        default: ''
     },
     avatar: {
         type: String,
@@ -18,13 +17,11 @@ module.exports = {
     realname: { //真实姓名
         type: String,
         default: '',
-        required: true
 
     },
     sex: { //用户性别
         type: String,
         default: '',
-        required: true
     },
     password: { //用户密码
         type: String,

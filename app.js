@@ -6,24 +6,15 @@ var cookieParser = require("cookie-parser"); //cookie解析器
 var logger = require("morgan"); //日志模块,只能记录请求信息
 var session = require("express-session");
 
+var headerControlMiddleware = require('./headerControlMiddleware'); //响应头统一控制
 var authMiddleware = require('./authMiddleware'); //token认证
-
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var tasksRouter = require("./routes/tasks");
 
 var app = express();
 
-//设置跨域
-app.all("*", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Authorization,Access-Token,Content-Type");
-    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    res.header("X-Powered-By", " 3.2.1");
-    res.header("Content-Type", "application/json;charset=utf-8");
-    next();
-});
-
+app.use(headerControlMiddleware); //响应header控制
 app.use(authMiddleware); //启用token认证
 // 使用 session 中间件
 app.use(
