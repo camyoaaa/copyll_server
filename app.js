@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, "public"))); //静态化public目录
 
 app.use("/", indexRouter);
 app.use("/auth", usersRouter);
-app.use("/tasks", tasksRouter);
+app.use("/task", tasksRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

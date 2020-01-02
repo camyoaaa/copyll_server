@@ -4,12 +4,16 @@ module.exports = {
         default: '',
         required: true
     },
-    taskid: {
-        type: String,
-        default: '',
-        required: true
-
+    status: { //任务状态  0保存 1已发布
+        type: Number,
+        default: 0
     },
+    // taskid: {
+    //     type: String,
+    //     default: '',
+    //     required: true
+
+    // },
     taskname: { //任务名称
         type: String,
         default: ''

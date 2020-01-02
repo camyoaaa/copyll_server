@@ -6,6 +6,10 @@ module.exports = {
         comment: '用户名'
 
     },
+    userid: {
+        type: Number,
+        default: 0
+    },
     guiderid: { //推广人id
         type: String,
         default: ''
