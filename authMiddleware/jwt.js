@@ -10,13 +10,13 @@ class Jwt {
     }
 
     //生成token
-    generateToken() {
+    generateToken(expireMinutes = 60 * 60 * 24) { //默认token有效期一天
         let data = this.data;
         let created = Math.floor(Date.now() / 1000);
         let cert = fs.readFileSync(path.join(__dirname, './pem/rsa_private_key.pem')); //私钥 可以自己生成
         let token = jwt.sign({
             data,
-            exp: created + 60 * 30,
+            exp: created + expireMinutes,
         }, cert, {
             algorithm: 'RS256'
         }); //默认'HS256'

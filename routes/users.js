@@ -45,7 +45,8 @@ router.get("/", function (req, res, next) {
 router.post("/login", async function (req, res, next) {
     const {
         phone,
-        password
+        password,
+        rememberMe
     } = req.body;
     try {
         let findandupdateResult = await UserModel.findOneAndUpdate({
@@ -59,7 +60,7 @@ router.post("/login", async function (req, res, next) {
             //成功更新一条数据
             let userid = findandupdateResult._id.toString();
             // res.cookie("userid", userid); //登录时候设置cookie
-            let userToken = new Jwt(userid).generateToken();
+            let userToken = new Jwt(userid).generateToken(rememberMe ? 60 * 60 * 24 * 7 : undefined);
             res.header("Authorization", userToken);
             res.json({
                 status: 200,
@@ -120,7 +121,7 @@ router.post("/isRegist", async function (req, res, next) {
         });
         res.json({
             status: 200,
-            isRegist: queryResult.length > 0
+            isRegist: !!queryResult
         });
     } catch (error) {}
 });
