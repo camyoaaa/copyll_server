@@ -4,6 +4,11 @@ module.exports = {
         default: '',
         required: true
     },
+    orderid: {
+        type: String,
+        default: '',
+        required: true
+    },
     status: { //任务状态  0保存 1已发布
         type: Number,
         default: 0
