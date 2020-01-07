@@ -11,10 +11,10 @@ const client = new Core({
 });
 
 const {
-    randomNumber
+    generateRandomNumber
 } = require('./commonFunc');
 exports.sendCaptcha = function (PhoneNumbers) {
-    const sixCaptcha = randomNumber(100000, 999999); //验证码范围
+    const sixCaptcha = generateRandomNumber(100000, 999999); //验证码范围
     return new Promise((resolve, reject) => {
         client.request('SendSms', {
             RegionId,
