@@ -24,6 +24,7 @@ const filterUserInfo = (record, req) => {
     usreInfo.userid = _id;
     usreInfo.lastLoginIP = usreInfo.lastLoginIP || getClientIP(req);
     usreInfo.lastLoginTime = usreInfo.lastLoginTime || moment().format("YYYY-MM-DD HH:mm:ss");
+    usreInfo.hasTradeCode = !!transactionPassword;
     return usreInfo;
 };
 
@@ -56,6 +57,7 @@ router.post("/login", async function (req, res, next) {
             lastLoginTime: moment().format("YYYY-MM-DD HH:mm:ss"),
             lastLoginIP: getClientIP(req)
         });
+
         if (findandupdateResult && findandupdateResult._id) {
             //成功更新一条数据
             let userid = findandupdateResult._id.toString();
@@ -237,5 +239,97 @@ router.get("/promote", async (req, res, next) => {
         });
     }
 });
+
+router.put('/changePassword', async function (req, res, next) {
+    let updateSucess = false;
+    let userid = req.userid;
+    let {
+        opassword,
+        npassword
+    } = req.body;
+    try {
+        let result = await UserModel.updateOne({
+            _id: userid,
+            password: opassword
+        }, {
+            $set: {
+                password: npassword
+            }
+        });
+        updateSucess = !!result;
+    } catch (error) {
+        updateSucess = false;
+
+    } finally {
+        res.json({
+            status: updateSucess ? 200 : 500,
+            msg: updateSucess ? '修改成功' : '修改失败',
+        });
+    }
+});
+
+router.put('/changeTradePassword', async function (req, res, next) {
+    let updateSucess = false;
+    let {
+        otpassword,
+        ntpassword
+    } = req.body;
+    let condition = {
+        _id: req.userid
+    };
+    if (otpassword) {
+        condition.transactionPassword = otpassword
+    }
+    try {
+        let result = await UserModel.updateOne(condition, {
+            $set: {
+                transactionPassword: ntpassword
+            }
+        });
+        console.log("********************************** result \n", result);
+        updateSucess = !!result;
+        console.log("updateSucess", updateSucess);
+    } catch (error) {
+        updateSucess = false;
+
+    } finally {
+        res.json({
+            status: updateSucess ? 200 : 500,
+            msg: updateSucess ? '修改成功' : '修改失败',
+        });
+    }
+});
+
+router.put('/changePhone', async function (req, res, next) {
+    let updateSucess = false;
+    let {
+        ophone,
+        nphone
+    } = req.body;
+
+    try {
+        let result = await UserModel.updateOne({
+            _id: req.userid,
+            phone: ophone
+        }, {
+            $set: {
+                phone: nphone
+            }
+        });
+        console.log("********************************** result \n", result);
+        updateSucess = !!result;
+        console.log("updateSucess", updateSucess);
+    } catch (error) {
+        updateSucess = false;
+
+    } finally {
+        res.json({
+            status: updateSucess ? 200 : 500,
+            msg: updateSucess ? '修改成功' : '修改失败',
+        });
+    }
+});
+
+
 
 module.exports = router;

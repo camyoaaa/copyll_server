@@ -17,6 +17,14 @@ const filterObject = function (object) {
     }
     return object
 }
+
+const generateFuzzyQuery = function (query) {
+    for (const key in query) {
+        query[key] = new RegExp(query[key]);
+    }
+    return query
+}
 exports.generateRandomNumber = generateRandomNumber;
 exports.generateTaskID = generateTaskID
 exports.filterObject = filterObject
+exports.generateFuzzyQuery = generateFuzzyQuery

@@ -1,3 +1,7 @@
+const {
+    Schema
+} = require("mongoose");
+
 module.exports = {
     luserid: {
         //猎流用户名
@@ -57,19 +61,45 @@ module.exports = {
         default: "",
         required: true
     },
-    targetInfo: {
+    targetinfo: {
         //任务对象的一些信息,任务类型不一样,target存放的数据也可能不一样.
         type: String,
-        default: ""
+        default: "",
+        get: function (str) {
+            return JSON.parse(str);
+        },
+        set: function (obj) {
+            return JSON.stringify(obj);
+        }
     },
-    daliy: {
+    plan: {
+        type: String,
+        default: "",
+        get: function (str) {
+            return JSON.parse(str);
+        },
+        set: function (obj) {
+            return JSON.stringify(obj);
+        }
+    },
+    daily: {
         //每日任务量
         type: Number,
         default: 0
     },
     alloc: {
         type: String,
-        default: ''
+        default: "",
+        get: function (str) {
+            return str.split(',');
+        },
+        set: function (arr) {
+            if (Array.isArray(arr)) {
+                return arr.join(',');
+            } else {
+                return arr
+            }
+        }
     },
     total: {
         //总任务量
@@ -89,11 +119,25 @@ module.exports = {
     keywords: {
         //关键词
         type: String,
-        default: ""
+        default: "",
+        get: function (str) {
+            return str.split(',');
+        },
+        set: function (arr) {
+            if (Array.isArray(arr)) {
+                return arr.join(',');
+            } else {
+                return arr
+            }
+        }
     },
     remark: {
         //备注
         type: String,
         default: 0
+    },
+    updatetime: {
+        type: Date,
+        default: Date.now
     }
 };
