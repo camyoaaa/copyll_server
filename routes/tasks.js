@@ -1,11 +1,11 @@
 var express = require("express");
 var router = express.Router();
 var API_CONFIG = require('../config/index');
+var getLieliuType = require('../tool/getLieliuType');
 const laxios = require('../tool/lieliuAxios');
 const {
     generateTaskID,
-    filterObject,
-    generateFuzzyQuery
+    filterObject
 } = require('../tool/commonFunc');
 
 const DB = require("../models");
@@ -88,7 +88,6 @@ router.put('/template/update', async function (req, res, next) {
     }
 });
 
-
 //取消任务
 router.post('cancel', async function (req, res, next) {
     let success = false;
@@ -112,11 +111,28 @@ router.post('cancel', async function (req, res, next) {
     }
 });
 
-
 //发布任务
 router.post('/publish', async function (req, res, next) {
     let success = false;
+    const {
+        platform,
+        category,
+        type,
+        plan: {
+            daily,
+            total,
+            dateRange: [sdate, edate]
+        },
+        targetinfo: {
+            itemlink
+        },
+        keywords,
+        scantime,
+        scandeep,
+        alloc
+    } = req.body;
     let taskid = generateTaskID();
+    let lieliuType = getLieliuType(platform, category, type);
     try {
 
         let publish = await laxios({
@@ -125,22 +141,24 @@ router.post('/publish', async function (req, res, next) {
             params: {
                 username: API_CONFIG.USER_NAME,
                 id: taskid,
-                begin_time: req.body.sdate,
-                type: 0,
-                count: req.body.total,
-                hour: req.body.alloc,
-                target: JSON.parse(req.body.targetInfo).itemlink,
-                keyword: req.body.keywords,
-                browse_time: req.body.scantime,
-                depth: req.body.scandeep,
+                begin_time: sdate,
+                type: lieliuType,
+                count: total,
+                hour: alloc.join(','),
+                target: itemlink,
+                keyword: keywords.join(','),
+                browse_time: scantime,
+                depth: scandeep,
             }
-
-
         }).catch((error) => {
             console.log('****************************error \n', error);
         });
         let result = await TaskModel.create({
             ...req.body,
+            daily,
+            total,
+            sdate,
+            edate,
             luserid: API_CONFIG.USER_NAME,
             kuserid: req.userid,
             taskid,
@@ -161,7 +179,41 @@ router.post('/publish', async function (req, res, next) {
     }
 });
 
+//任务查询
+router.get('/list', async function (req, res, next) {
+    const {
+        platform,
+        category,
+        type,
+        sdate,
+        edate,
+        start,
+        limit,
+        params,
+        status,
+    } = req.body;
 
+    let type = getLieliuType(platform, category, type);
+    try {
+        let result = await laxios({
+            url: '/ll/task_list',
+            method: 'get',
+            params: {
+                username: API_CONFIG.USER_NAME,
+                type: type,
+                line: limit,
+                page: start,
+                date1: sdate,
+                date2: edate,
+                do: params.key,
+                params: params.value
+            }
+        })
+        console.log('****************result list', result);
+    } catch (error) {
+
+    }
+})
 
 //查询任务模板
 router.get('/template/list', async function (req, res, next) {
@@ -215,8 +267,6 @@ router.get('/template/list', async function (req, res, next) {
 
 
 });
-
-
 
 //删除任务模板
 router.delete('/template/delete', async function (req, res, next) {

@@ -15,7 +15,7 @@ var tasksRouter = require("./routes/tasks");
 var app = express();
 
 app.use(headerControlMiddleware); //响应header控制
-app.use(authMiddleware); //启用token认证
+
 // 使用 session 中间件
 app.use(
     session({
@@ -43,6 +43,7 @@ app.use(cookieParser()); //使用cookie解析中间件
 app.use(bodyParser.json()); //使用请求体解析中间件
 app.use(express.static(path.join(__dirname, "public"))); //静态化public目录
 
+app.use(authMiddleware); //启用token认证
 app.use("/", indexRouter);
 app.use("/auth", usersRouter);
 app.use("/task", tasksRouter);

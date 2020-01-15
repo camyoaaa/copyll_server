@@ -2,6 +2,11 @@ var express = require("express");
 var router = express.Router();
 var moment = require("moment");
 
+// 引入解析包
+var formidable = require("formidable");
+var fs = require("fs");
+let path = require("path");
+
 const DB = require("../models");
 const UserModel = DB.getModel("Users");
 const ScoreModel = DB.getModel("Scores");
@@ -240,7 +245,7 @@ router.get("/promote", async (req, res, next) => {
     }
 });
 
-router.put('/changePassword', async function (req, res, next) {
+router.put("/changePassword", async function (req, res, next) {
     let updateSucess = false;
     let userid = req.userid;
     let {
@@ -259,16 +264,15 @@ router.put('/changePassword', async function (req, res, next) {
         updateSucess = !!result;
     } catch (error) {
         updateSucess = false;
-
     } finally {
         res.json({
             status: updateSucess ? 200 : 500,
-            msg: updateSucess ? '修改成功' : '修改失败',
+            msg: updateSucess ? "修改成功" : "修改失败"
         });
     }
 });
 
-router.put('/changeTradePassword', async function (req, res, next) {
+router.put("/changeTradePassword", async function (req, res, next) {
     let updateSucess = false;
     let {
         otpassword,
@@ -278,7 +282,7 @@ router.put('/changeTradePassword', async function (req, res, next) {
         _id: req.userid
     };
     if (otpassword) {
-        condition.transactionPassword = otpassword
+        condition.transactionPassword = otpassword;
     }
     try {
         let result = await UserModel.updateOne(condition, {
@@ -291,16 +295,15 @@ router.put('/changeTradePassword', async function (req, res, next) {
         console.log("updateSucess", updateSucess);
     } catch (error) {
         updateSucess = false;
-
     } finally {
         res.json({
             status: updateSucess ? 200 : 500,
-            msg: updateSucess ? '修改成功' : '修改失败',
+            msg: updateSucess ? "修改成功" : "修改失败"
         });
     }
 });
 
-router.put('/changePhone', async function (req, res, next) {
+router.put("/changePhone", async function (req, res, next) {
     let updateSucess = false;
     let {
         ophone,
@@ -321,15 +324,74 @@ router.put('/changePhone', async function (req, res, next) {
         console.log("updateSucess", updateSucess);
     } catch (error) {
         updateSucess = false;
-
     } finally {
         res.json({
             status: updateSucess ? 200 : 500,
-            msg: updateSucess ? '修改成功' : '修改失败',
+            msg: updateSucess ? "修改成功" : "修改失败"
         });
     }
 });
 
+router.post("/avatar", async function (req, res, next) {
+    console.log(req.userid);
+    let form = new formidable.IncomingForm();
+    form.encoding = "utf-8"; // 编码
+    // 保留扩展名
+    form.keepExtensions = true;
+    //文件存储路径 最后要注意加 '/' 否则会被存在public下
+    form.uploadDir = path.join(__dirname, "../public/images/avatar/");
+    let updateSucess = false;
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            return next(err);
+        }
+        let imgPath = files.file.path;
+        let imgName = files.file.name;
+        // 返回路径和文件名
+        try {
+            fs.rename(imgPath, `${imgPath}.png`, async function () {
+                let paths = imgPath.split("\\");
+                let publicpath = paths[paths.length - 1];
+                let finalpath = `http://192.168.3.94:9527/images/avatar/${publicpath}.png`
+                let result = await UserModel.updateOne({
+                    _id: req.userid
+                }, {
+                    $set: {
+                        avatar: finalpath
+                    }
+                });
+                updateSucess = (result.nModified == 1);
+                res.json({
+                    status: updateSucess ? 200 : 500,
+                    data: updateSucess ? {
+                        name: imgName,
+                        path: finalpath
+                    } : {}
+                });
+            });
+        } catch (err) {}
+    });
+});
 
+router.put('/modinfo', async function (req, res, next) {
+    try {
+        let {
+            nModified
+        } = await UserModel.updateOne({
+            _id: req.userid
+        }, req.body);
+        if (nModified) {
+            res.json({
+                status: 200,
+                msg: '用户信息更新成功'
+            })
+        }
+    } catch (error) {
+        res.json({
+            status: 500,
+            msg: '系统错误请重试'
+        })
+    }
+});
 
 module.exports = router;

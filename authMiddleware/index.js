@@ -5,7 +5,7 @@ const noAuthUrls = [
     '/auth/login',
     '/auth/regist',
     '/auth/isRegist',
-    '/auth/captcha',
+    '/auth/captcha'
 ];
 const auth = function (req, res, next) {
     if (!noAuthUrls.includes(req.url)) {
