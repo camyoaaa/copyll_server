@@ -39,7 +39,8 @@ const getClientIP = req => {
     // console.log("ips = " + JSON.stringify(req.ips)); // 相当于(req.header('x-forwarded-for') || '').split(',')
     // console.log("remoteAddress = " + req.connection.remoteAddress); // 未发生代理时，请求的ip
     // console.log("ip = " + req.ip); // 同req.connection.remoteAddress, 但是格式要好一些
-    return (ip = req.headers["x-real-ip"] ? req.headers["x-real-ip"] : req.ip.replace(/::ffff:/, ""));
+
+    return req.headers["x-real-ip"] ? req.headers["x-real-ip"] : req.ip.replace(/::ffff:/, "");
 };
 
 /* GET users listing. */
@@ -352,7 +353,7 @@ router.post("/avatar", async function (req, res, next) {
             fs.rename(imgPath, `${imgPath}.png`, async function () {
                 let paths = imgPath.split("\\");
                 let publicpath = paths[paths.length - 1];
-                let finalpath = `http://192.168.3.94:9527/images/avatar/${publicpath}.png`
+                let finalpath = `http://192.168.1.32:9527/images/avatar/${publicpath}.png`
                 let result = await UserModel.updateOne({
                     _id: req.userid
                 }, {
