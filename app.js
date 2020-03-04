@@ -14,6 +14,13 @@ var tasksRouter = require("./routes/tasks");
 var searchRouter = require("./routes/search");
 var templateRouter = require("./routes/templates");
 
+var DBStart = require('./models'); //启动数据库
+var taskbat = require('./threads/taskbat'); //数据库跑批
+
+DBStart.then(() => {
+    taskbat();
+});
+
 var app = express();
 
 app.use(headerControlMiddleware); //响应header控制

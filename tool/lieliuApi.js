@@ -51,6 +51,27 @@ exports.taskSearch = function ({
     });
 };
 
+//根据id查询
+exports.taskSearchByids = function (idarr) {
+    return new Promise((resolve, reject) => {
+        laxios({
+            url: '/ll/task_list',
+            method: 'get',
+            params: {
+                id: idarr.join(',')
+            }
+        }).then(({
+            list
+        }) => {
+            resolve((list || []).map((i) => {
+                return {
+                    id: i.id,
+                    status: i.status
+                }
+            }));
+        }).catch((err) => reject(err));
+    });
+}
 //查询店铺信息
 exports.tbShopSearch = function (url) {
     return laxios({

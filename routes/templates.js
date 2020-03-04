@@ -8,9 +8,7 @@ const {
     filterObject
 } = require('../tool/commonFunc');
 
-const DB = require("../models");
-const TaskModel = DB.getModel("Tasks");
-
+const TaskModel = require('../models/tasks');
 
 //保存模板
 router.post('/save', async function (req, res, next) {
@@ -24,16 +22,10 @@ router.post('/save', async function (req, res, next) {
         },
     } = req.body;
     try {
-        let result = await TaskModel.create({
+        let result = await TaskModel.saveTemp({
             ...req.body,
-            daily,
-            total,
-            sdate,
-            edate,
             luserid: API_CONFIG.USER_NAME,
-            kuserid: req.userid,
-            taskid: generateTaskID(),
-            status: 0 //只保存
+            kuserid: req.userid
         });
         if (result) {
             success = true;
@@ -53,17 +45,9 @@ router.post('/save', async function (req, res, next) {
 router.put('/update', async function (req, res, next) {
 
     let updateSuccess = false;
-    const {
-        taskid,
-        plan: {
-            daily,
-            total,
-            dateRange: [sdate, edate]
-        },
-    } = req.body;
     try {
         let result = await TaskModel.update({
-            taskid
+            taskid: req.body.taskid
         }, {
             $set: {
                 ...req.body,

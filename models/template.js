@@ -1,37 +1,28 @@
 const mongoose = require("mongoose");
 const MongooseSchema = mongoose.Schema;
-const CollectionName = 'Tasks';
+const CollectionName = 'Templates';
 
 const {
     generateTaskID,
     filterObject
 } = require('../tool/commonFunc');
 
+
+
 const TaskSchemaDefine = {
-    luserid: {
-        //猎流用户名
-        type: String,
-        default: "",
-        required: true
-    },
     kuserid: {
         //客多达用户名
         type: String,
         default: "",
         required: true
     },
-    taskid: {
-        //任务id
+    tempid: {
+        //模板id
         type: String,
         default: "",
         required: true
     },
-    status: {
-        //任务状态  0保存 1已发布
-        type: Number,
-        default: 0
-    },
-    taskname: {
+    tempname: {
         //任务名称
         type: String,
         default: ""
@@ -150,6 +141,10 @@ const TaskSchemaDefine = {
     updatetime: {
         type: Date,
         default: Date.now
+    },
+    refreshms: {
+        type: Number,
+        default: Date.now
     }
 };
 
@@ -166,10 +161,9 @@ TaskSchema.set('toObject', { // toObject时能够转换
 });
 
 /**TaskSchema静态方法**/
-
-//保存模板
-TaskSchema.static.saveTemp = function (record = {
-    status: 0,
+//增加一条记录
+TaskSchema.statics.addaRecord = function (record = {
+    status,
     luserid,
     kuserid,
     taskid: generateTaskID(),
@@ -189,34 +183,52 @@ TaskSchema.static.saveTemp = function (record = {
     scandeep,
     keywords,
     remark,
-    updatetime: Date.now()
-
+    updatetime: Date.now(),
+    refreshms: Date.now(),
+    description
 }) {
     return this.create(record);
 }
+TaskSchema.statics.saveTemp = function (record) {
+        return this.addaRecord({
+            ...record,
+            status: -1 //作为模板
+        });
+    },
+    TaskSchema.statics.publicTask = function (record) {
+        return this.addaRecord({
+            ...record,
+            status: 0 //处理中
+        });
+    },
 
-//更新模板
-TaskSchema.static.updateTemp = function (taskid, payload) {
-    return this.update({
-        taskid
-    }, {
-        $set: payload
-    });
-}
+
+    //更新模板
+    TaskSchema.statics.updateTemp = function (taskid, payload) {
+        return this.update({
+            taskid
+        }, {
+            $set: payload
+        });
+    }
+
 
 //获取模板列表
-TaskSchema.static.getTempList = function (condition = {
+TaskSchema.statics.getTempList = function (condition = {
     kuserid,
     platform,
     category,
     type,
-    taskname
+    taskname,
+    start,
+    limit
 }) {
     let findCondition = filterObject(condition); //有效的查询条件,过滤掉空值
 
     if (findCondition.taskname) { //任务名称模糊匹配
         findCondition.taskname = new RegExp(findCondition.taskname);
     }
+    findCondition.status = -1; //任务状态
     let countPromise = this.countDocuments(findCondition);
     let queryPromise = this.find(findCondition).sort({
         '_id': -1
@@ -230,8 +242,55 @@ TaskSchema.static.getTempList = function (condition = {
     return Promise.all([countPromise, queryPromise]);
 }
 
+
+TaskSchema.statics.getTaskList = function (condition = {
+    kuserid,
+    platform,
+    category,
+    type,
+    sdate,
+    edate,
+    taskid,
+    taskname,
+    status: 1
+}) {
+    return this.getList({
+        ...condition,
+        status:
+    });
+}
+
 //删除模板
-TaskSchema.static.deleteTemp = function (taskid) {
+TaskSchema.statics.deleteTemp = function (taskid) {
     return this.deleteOne(taskid)
+}
+//获取状态为进行中的20条记录,并返回任务id
+TaskSchema.statics.getDoingTask20 = function (currentms) {
+
+    return new Promise((resolve, reject) => {
+
+    });
+    return this.find({
+        refreshms: {
+            $lte: currentms - 5 * 60 * 60
+        }
+    }).limit(20).select('taskid')
+}
+
+//更新任务状态
+TaskSchema.statics.updateStatus = function (idstatus) {
+    return this.bulkWrite(idstatus.map((ele) => {
+        return {
+            updateOne: {
+                filter: {
+                    taskid: ele.id
+                },
+                update: {
+                    refreshms: Date.now(),
+                    status: ele.status
+                }
+            }
+        }
+    }));
 }
 module.exports = mongoose.model(CollectionName, TaskSchema, CollectionName);

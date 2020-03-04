@@ -9,17 +9,25 @@ var formidable = require("formidable");
 var fs = require("fs");
 let path = require("path");
 
-const DB = require("../models");
-const UserModel = DB.getModel("Users");
-const ScoreModel = DB.getModel("Scores");
+const UserModel = require('../models/users');
+const ScoreModel = require('../models/score');
 
-const { sendCaptcha } = require("../tool/sendSMS"); //发送验证码短信api
+
+const {
+    sendCaptcha
+} = require("../tool/sendSMS"); //发送验证码短信api
 
 const Jwt = require("../authMiddleware/jwt");
 
 //剥离记录中敏感信息
 const filterUserInfo = (record, req) => {
-    const { password, transactionPassword, __v, _id, ...usreInfo } = record;
+    const {
+        password,
+        transactionPassword,
+        __v,
+        _id,
+        ...usreInfo
+    } = record;
     usreInfo.userid = _id;
     usreInfo.lastLoginIP = usreInfo.lastLoginIP || getClientIP(req);
     usreInfo.lastLoginTime = usreInfo.lastLoginTime || moment().format("YYYY-MM-DD HH:mm:ss");
@@ -38,24 +46,25 @@ const getClientIP = req => {
 };
 
 /* GET users listing. */
-router.get("/", function(req, res, next) {
+router.get("/", function (req, res, next) {
     res.send("respond with a resource");
 });
 
 //用户登录
-router.post("/login", async function(req, res, next) {
-    const { phone, password, rememberMe } = req.body;
+router.post("/login", async function (req, res, next) {
+    const {
+        phone,
+        password,
+        rememberMe
+    } = req.body;
     try {
-        let findandupdateResult = await UserModel.findOneAndUpdate(
-            {
-                phone,
-                password
-            },
-            {
-                lastLoginTime: moment().format("YYYY-MM-DD HH:mm:ss"),
-                lastLoginIP: getClientIP(req)
-            }
-        );
+        let findandupdateResult = await UserModel.findOneAndUpdate({
+            phone,
+            password
+        }, {
+            lastLoginTime: moment().format("YYYY-MM-DD HH:mm:ss"),
+            lastLoginIP: getClientIP(req)
+        });
 
         if (findandupdateResult && findandupdateResult._id) {
             //成功更新一条数据
@@ -80,8 +89,11 @@ router.post("/login", async function(req, res, next) {
 });
 
 //用户登出
-router.post("/logout", async function(req, res, next) {
-    const { phone, password } = req.body;
+router.post("/logout", async function (req, res, next) {
+    const {
+        phone,
+        password
+    } = req.body;
     try {
         let user = await UserModel.findOne({
             phone,
@@ -109,9 +121,11 @@ router.post("/logout", async function(req, res, next) {
 });
 
 //判断用户是否注册
-router.post("/isRegist", async function(req, res, next) {
+router.post("/isRegist", async function (req, res, next) {
     try {
-        const { phone } = req.body;
+        const {
+            phone
+        } = req.body;
         let queryResult = await UserModel.findOne({
             phone
         });
@@ -123,10 +137,15 @@ router.post("/isRegist", async function(req, res, next) {
 });
 
 //获取验证码
-router.post("/captcha", async function(req, res, next) {
-    const { phone } = req.body;
+router.post("/captcha", async function (req, res, next) {
+    const {
+        phone
+    } = req.body;
     try {
-        const { sixCaptcha, result } = await sendCaptcha(phone);
+        const {
+            sixCaptcha,
+            result
+        } = await sendCaptcha(phone);
 
         //将验证码存入session
         // req.session.captcha = sixCaptcha;
@@ -145,8 +164,13 @@ router.post("/captcha", async function(req, res, next) {
 });
 
 //注册用户
-router.post("/regist", async function(req, res, next) {
-    const { username, phone, password, guiderid } = req.body;
+router.post("/regist", async function (req, res, next) {
+    const {
+        username,
+        phone,
+        password,
+        guiderid
+    } = req.body;
     let registSuccess = await UserModel.create({
         username,
         guiderid,
@@ -174,7 +198,7 @@ router.post("/regist", async function(req, res, next) {
 });
 
 //获取用户信息
-router.get("/info", async function(req, res, next) {
+router.get("/info", async function (req, res, next) {
     try {
         let userid = req.userid;
         let queryResult = await UserModel.findOne({
@@ -196,8 +220,7 @@ router.get("/info", async function(req, res, next) {
 router.get("/promote", async (req, res, next) => {
     try {
         let userid = req.userid;
-        let promoteUsers = await UserModel.aggregate([
-            {
+        let promoteUsers = await UserModel.aggregate([{
                 $match: {
                     guiderid: userid
                 }
@@ -225,22 +248,22 @@ router.get("/promote", async (req, res, next) => {
     }
 });
 
-router.put("/changePassword", async function(req, res, next) {
+router.put("/changePassword", async function (req, res, next) {
     let updateSucess = false;
     let userid = req.userid;
-    let { opassword, npassword } = req.body;
+    let {
+        opassword,
+        npassword
+    } = req.body;
     try {
-        let result = await UserModel.updateOne(
-            {
-                _id: userid,
-                password: opassword
-            },
-            {
-                $set: {
-                    password: npassword
-                }
+        let result = await UserModel.updateOne({
+            _id: userid,
+            password: opassword
+        }, {
+            $set: {
+                password: npassword
             }
-        );
+        });
         updateSucess = !!result;
     } catch (error) {
         updateSucess = false;
@@ -252,9 +275,12 @@ router.put("/changePassword", async function(req, res, next) {
     }
 });
 
-router.put("/changeTradePassword", async function(req, res, next) {
+router.put("/changeTradePassword", async function (req, res, next) {
     let updateSucess = false;
-    let { otpassword, ntpassword } = req.body;
+    let {
+        otpassword,
+        ntpassword
+    } = req.body;
     let condition = {
         _id: req.userid
     };
@@ -280,22 +306,22 @@ router.put("/changeTradePassword", async function(req, res, next) {
     }
 });
 
-router.put("/changePhone", async function(req, res, next) {
+router.put("/changePhone", async function (req, res, next) {
     let updateSucess = false;
-    let { ophone, nphone } = req.body;
+    let {
+        ophone,
+        nphone
+    } = req.body;
 
     try {
-        let result = await UserModel.updateOne(
-            {
-                _id: req.userid,
-                phone: ophone
-            },
-            {
-                $set: {
-                    phone: nphone
-                }
+        let result = await UserModel.updateOne({
+            _id: req.userid,
+            phone: ophone
+        }, {
+            $set: {
+                phone: nphone
             }
-        );
+        });
         console.log("********************************** result \n", result);
         updateSucess = !!result;
         console.log("updateSucess", updateSucess);
@@ -309,10 +335,10 @@ router.put("/changePhone", async function(req, res, next) {
     }
 });
 
-router.post("/avatar", async function(req, res, next) {
+router.post("/avatar", async function (req, res, next) {
     console.log(req.userid);
     let form = new formidable.IncomingForm();
-    form.encoding = "utf-8"; // 编码
+    // form.encoding = "utf-8"; // 编码
     // 保留扩展名
     form.keepExtensions = true;
     //文件存储路径 最后要注意加 '/' 否则会被存在public下
@@ -326,41 +352,36 @@ router.post("/avatar", async function(req, res, next) {
         let imgName = files.file.name;
         // 返回路径和文件名
         try {
-            fs.rename(imgPath, `${imgPath}.png`, async function() {
+            fs.rename(imgPath, `${imgPath}.png`, async function () {
                 let paths = imgPath.split("\\");
                 let publicpath = paths[paths.length - 1];
 
-                console.log("address.ip()", address.ip());
-                let finalpath = `http://192.168.31.145:9527/images/avatar/${publicpath}.png`;
-                let result = await UserModel.updateOne(
-                    {
-                        _id: req.userid
-                    },
-                    {
-                        $set: {
-                            avatar: finalpath
-                        }
+                let finalpath = `http://${address.ip()}:9527/images/avatar/${publicpath}.png`;
+                let result = await UserModel.updateOne({
+                    _id: req.userid
+                }, {
+                    $set: {
+                        avatar: finalpath
                     }
-                );
+                });
                 updateSucess = result.nModified == 1;
                 res.json({
                     status: updateSucess ? 200 : 500,
-                    data: updateSucess
-                        ? {
-                              name: imgName,
-                              path: finalpath
-                          }
-                        : {}
+                    data: updateSucess ? {
+                        name: imgName,
+                        path: finalpath
+                    } : {}
                 });
             });
         } catch (err) {}
     });
 });
 
-router.put("/modinfo", async function(req, res, next) {
+router.put("/modinfo", async function (req, res, next) {
     try {
-        let { nModified } = await UserModel.updateOne(
-            {
+        let {
+            nModified
+        } = await UserModel.updateOne({
                 _id: req.userid
             },
             req.body

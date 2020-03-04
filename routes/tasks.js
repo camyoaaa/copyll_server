@@ -12,8 +12,7 @@ const {
     generateTaskID
 } = require('../tool/commonFunc');
 
-const DB = require("../models");
-const TaskModel = DB.getModel("Tasks");
+const TaskModel = require('../models/tasks');
 
 //取消任务
 router.post('cancel', async function (req, res, next) {
