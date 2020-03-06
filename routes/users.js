@@ -336,7 +336,6 @@ router.put("/changePhone", async function (req, res, next) {
 });
 
 router.post("/avatar", async function (req, res, next) {
-    console.log(req.userid);
     let form = new formidable.IncomingForm();
     // form.encoding = "utf-8"; // 编码
     // 保留扩展名

@@ -78,18 +78,17 @@ router.post('/publish', async function (req, res, next) {
         }).catch((error) => {
             console.log('****************************error \n', error);
         });
-
-        let result = await TaskModel.create({
-            ...req.body,
-            daily,
-            total,
-            sdate,
-            edate,
-            luserid: API_CONFIG.USER_NAME,
-            kuserid: req.userid,
-            taskid,
-            status: 1 //发布
-        });
+        let reslut = await TaskModel.addTask(req.body);
+        // let result = await TaskModel.create({
+        //     ...req.body,
+        //     daily,
+        //     total,
+        //     sdate,
+        //     edate,
+        //     kuserid: req.userid,
+        //     taskid,
+        //     status: 1 //发布
+        // });
         if (result) {
             success = true;
         }
