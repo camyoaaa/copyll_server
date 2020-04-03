@@ -2,7 +2,7 @@ const {
     validSMSTemplateCode,
     validSMSSignName,
     RegionId,
-    client
+    client,
 } = require('../config/alicore');
 
 const {
